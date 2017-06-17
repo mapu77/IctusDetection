@@ -1,17 +1,20 @@
 package org.hackprague.ictusdetection
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
-
-import kotlinx.android.synthetic.main.activity_main.*
-import android.content.ContentValues
-import android.os.CountDownTimer
+import android.util.Base64
 import android.view.View
+import kotlinx.android.synthetic.main.activity_main.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64.DEFAULT
+import java.io.ByteArrayOutputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +48,14 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
         }.start()
+    }
+
+    private fun encodeImage(): String? {
+        val bm = BitmapFactory.decodeFile(imageUri?.path)
+        val baos = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b = baos.toByteArray()
+        return Base64.encodeToString(b, DEFAULT)
     }
 
 
