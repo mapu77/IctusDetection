@@ -15,6 +15,9 @@ import android.util.Base64.DEFAULT
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64.DEFAULT
 import java.io.ByteArrayOutputStream
 
 
