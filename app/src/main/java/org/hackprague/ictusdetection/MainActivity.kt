@@ -11,6 +11,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import android.util.Base64
+import android.view.View
+import kotlinx.android.synthetic.main.activity_main.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64.DEFAULT
+import java.io.ByteArrayOutputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +55,14 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
 
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+
+    private fun encodeImage(): String? {
+        val bm = BitmapFactory.decodeFile(imageUri?.path)
+        val baos = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b = baos.toByteArray()
+        return Base64.encodeToString(b, DEFAULT)
     }
 
 
