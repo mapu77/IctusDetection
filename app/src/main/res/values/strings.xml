@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Ictus Detection</string>
+    <string name="take_picture">New Picture</string>
 </resources>
