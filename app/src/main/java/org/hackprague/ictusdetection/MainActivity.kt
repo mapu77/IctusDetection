@@ -63,25 +63,29 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
             override fun onFinish() {
                 if (!ictusDetection) takePhoto()
                 else {
-                    val builder = AlertDialog.Builder(this@MainActivity)
-                    builder.setMessage("Ictus synthoms detected! Calling emergency service")
-                    builder.create().show()
-
-                    object : CountDownTimer(4000, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
-                        }
-
-                        override fun onFinish() {
-                            val intent = Intent(Intent.ACTION_CALL)
-                            intent.setData(Uri.parse("tel:" + EMERGENCY_NUMBER))
-                            startActivity(intent)
-
-                        }
-                    }.start()
+                    treatIctus()
                 }
             }
         }.start()
 
+    }
+
+    private fun treatIctus() {
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setMessage("Ictus synthoms detected! Calling emergency service")
+        builder.create().show()
+
+        object : CountDownTimer(4000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+            }
+
+            override fun onFinish() {
+                val intent = Intent(Intent.ACTION_CALL)
+                intent.setData(Uri.parse("tel:" + EMERGENCY_NUMBER))
+                startActivity(intent)
+
+            }
+        }.start()
     }
 
     private fun activateGyroscopeSensor() {
@@ -134,9 +138,8 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
         if (!hasIctus!!) {
             System.out.println("Try again!")
             startActivity(Intent(this, ImageTestFragmentHolder::class.java))
-        } else {
-            System.out.println("Pilla Ictus en la MainActivity")
-        }
+        } else
+            treatIctus()
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
