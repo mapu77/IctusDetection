@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
 
     val CAMERA_REQUEST_CODE = 0
+    val EMERGENCY_NUMBER = "+34695648474"
     val TIME_TO_HOLD_DEVICE: Long = 10000
     val sensorManager: SensorManager by lazy {
         getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -63,8 +64,20 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
                 if (!ictusDetection) takePhoto()
                 else {
                     val builder = AlertDialog.Builder(this@MainActivity)
-                    builder.setMessage("Te ha dado un ictus loco")
+                    builder.setMessage("Ictus synthoms detected! Calling emergency service")
                     builder.create().show()
+
+                    object : CountDownTimer(4000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                        }
+
+                        override fun onFinish() {
+                            val intent = Intent(Intent.ACTION_CALL)
+                            intent.setData(Uri.parse("tel:" + EMERGENCY_NUMBER))
+                            startActivity(intent)
+
+                        }
+                    }.start()
                 }
             }
         }.start()

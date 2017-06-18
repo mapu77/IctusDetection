@@ -4,17 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="20dp"
     tools:context="org.hackprague.ictusdetection.MainActivity"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/countdown"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textAlignment="center"/>
 
     <ImageView
         android:id="@+id/photoImageView"
@@ -24,10 +23,6 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/your_image"
         android:visibility="invisible"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdown"
         app:srcCompat="@android:color/darker_gray" />
 
     <ProgressBar
