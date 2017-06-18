@@ -29,6 +29,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        toNextButton.setOnClickListener({
+            startActivity(Intent(applicationContext, ImageTestFragmentHolder::class.java))
+        })
+
         object : CountDownTimer(TIME_TO_PHOTO, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -75,6 +79,11 @@ class MainActivity : AppCompatActivity() {
                     progressBar.visibility = View.VISIBLE
                     progressBar.isIndeterminate = true
                     Toast.makeText(applicationContext, "Analysing image", Toast.LENGTH_LONG).show()
+                    val ictusDetection = false
+                    if (!ictusDetection) {
+                        toNextButton.visibility = View.VISIBLE
+
+                    }
                 }
             }
         }

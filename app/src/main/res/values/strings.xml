@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Ictus Detection</string>
     <string name="take_picture">New Picture</string>
+    <string name="title_activity_image_test_holder">ImageTestHolder</string>
+    <string name="action_settings">Settings</string>
+    <string name="next_test">Next test</string>
+    <string name="your_image">your Image</string>
+    <string name="imageQuestion">What is this image?</string>
+    <string name="submit">Submit</string>
 </resources>
