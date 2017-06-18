@@ -8,6 +8,7 @@ import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -16,7 +17,6 @@ import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
-import android.hardware.SensorManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
 
     private var imageUri: Uri? = null
 
-    var cloudVision: CloudVision? = null;
+    var cloudVision: CloudVision? = null
     var ictusDetection = false
 
 
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        cloudVision = CloudVision();
+        cloudVision = CloudVision()
         toNextButton.setOnClickListener({
             startActivity(Intent(applicationContext, ImageTestFragmentHolder::class.java))
         })
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
     }
 
 
-    private var assinTask: AsyncTask<*, *, *>? = null
+    private var asyncTask: AsyncTask<*, *, *>? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -115,13 +115,13 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
         when (requestCode) {
             CAMERA_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK && imageUri != null) {
-                    photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri))
+                    photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri))
 
                     progressBar.visibility = View.VISIBLE
                     progressBar.isIndeterminate = true
 
-                    assinTask = cloudVision?.callCloudVision(this, imageUri, this.applicationContext)
-                    assinTask?.execute()
+                    asyncTask = cloudVision?.callCloudVision(this, imageUri, this.applicationContext)
+                    asyncTask?.execute()
                     Toast.makeText(applicationContext, "Analysing image", Toast.LENGTH_LONG).show()
                 }
             }
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
     override fun TaskCompletionResult(hasIctus: Boolean?) {
         progressBar.visibility = View.INVISIBLE
 
-        if(!hasIctus!!){
+        if (!hasIctus!!) {
             System.out.println("Try again!")
             startActivity(Intent(this, ImageTestFragmentHolder::class.java))
         } else {
@@ -145,9 +145,9 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         val MAX_MOVEMENT = 1
-        if (event!!.values.get(0) > MAX_MOVEMENT ||
-                event.values.get(1) > MAX_MOVEMENT ||
-                event.values.get(2) > MAX_MOVEMENT) {
+        if (event!!.values[0] > MAX_MOVEMENT ||
+                event.values[1] > MAX_MOVEMENT ||
+                event.values[2] > MAX_MOVEMENT) {
             System.out.println("Que te pega el ictus")
             ictusDetection = true
         }
