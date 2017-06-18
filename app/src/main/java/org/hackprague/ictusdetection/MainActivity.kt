@@ -18,9 +18,6 @@ import android.view.View
 import android.widget.Toast
 import android.hardware.SensorManager
 import kotlinx.android.synthetic.main.activity_main.*
-import android.support.v4.content.ContextCompat.startActivity
-
-
 
 
 class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
@@ -72,7 +69,6 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
             }
         }.start()
 
-
     }
 
     private fun activateGyroscopeSensor() {
@@ -106,22 +102,14 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
         when (requestCode) {
             CAMERA_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK && imageUri != null) {
-                    photoImageView.visibility = View.VISIBLE
                     photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri))
 
-                    cloudVision?.callCloudVision(imageUri, this.applicationContext)
-                    photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri))
                     progressBar.visibility = View.VISIBLE
                     progressBar.isIndeterminate = true
 
-                    assinTask = cloudVision?.callCloudVision(this, imageUri, this.applicationContext, progressBar)
+                    assinTask = cloudVision?.callCloudVision(this, imageUri, this.applicationContext)
                     assinTask?.execute()
                     Toast.makeText(applicationContext, "Analysing image", Toast.LENGTH_LONG).show()
-
-                    if (!ictusDetection) {
-                        toNextButton.visibility = View.VISIBLE
-
-                    }
                 }
             }
         }

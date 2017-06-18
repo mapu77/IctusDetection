@@ -51,7 +51,7 @@ public class CloudVision {
     private TaskDelegate delegate;
 
     @SuppressLint("StaticFieldLeak")
-    public AsyncTask callCloudVision(final TaskDelegate delegate, final Uri uri, final Context context, final ProgressBar progressBar) {
+    public AsyncTask callCloudVision(final TaskDelegate delegate, final Uri uri, final Context context) {
 
         // Do the real work in an async task, because we need to use the network anyway
         return new AsyncTask<Object, Void, Boolean>() {
