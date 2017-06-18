@@ -15,10 +15,6 @@ import android.util.Base64.DEFAULT
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64.DEFAULT
-import java.io.ByteArrayOutputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,10 +24,13 @@ class MainActivity : AppCompatActivity() {
 
     private var imageUri: Uri? = null
 
+    var cloudVision:CloudVision? = null;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        cloudVision = CloudVision();
         toNextButton.setOnClickListener({
             startActivity(Intent(applicationContext, ImageTestFragmentHolder::class.java))
         })
@@ -62,15 +61,6 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
-    private fun encodeImage(): String? {
-        val bm = BitmapFactory.decodeFile(imageUri?.path)
-        val baos = ByteArrayOutputStream()
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val b = baos.toByteArray()
-        return Base64.encodeToString(b, DEFAULT)
-    }
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -78,6 +68,9 @@ class MainActivity : AppCompatActivity() {
             CAMERA_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK && imageUri != null) {
                     photoImageView.visibility = View.VISIBLE
+                    photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri))
+
+                    cloudVision?.callCloudVision(imageUri, this.applicationContext)
                     photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri))
                     progressBar.visibility = View.VISIBLE
                     progressBar.isIndeterminate = true
