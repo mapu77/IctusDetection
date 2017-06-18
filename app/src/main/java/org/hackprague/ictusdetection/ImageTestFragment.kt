@@ -29,22 +29,25 @@ class ImageTestFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        val selectedLabel = labels[indexLabel++]
+        var selectedLabel = labels[indexLabel]
         displayImage(selectedLabel)
         next.setOnClickListener({
             val inputText = description.text.toString()
             if (selectedLabel != inputText.toLowerCase()) {
                 wrong++
             }
-            if (indexLabel < labels.size) {
-                displayImage(labels[indexLabel++])
+            if (indexLabel < labels.size-1) {
+                indexLabel++
+                displayImage(labels[indexLabel])
+                selectedLabel = labels[indexLabel]
             } else {
                 if (wrong < 2) {
-                    //TODO: Jump to next test
+                    Toast.makeText(context, "You are healthy", Toast.LENGTH_LONG).show()
                 } else {
                     Toast.makeText(context, "Oops, ictus!", Toast.LENGTH_LONG).show()
                 }
             }
+            description.setText("")
         })
     }
 
