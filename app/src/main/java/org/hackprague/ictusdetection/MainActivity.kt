@@ -2,29 +2,33 @@ package org.hackprague.ictusdetection
 
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
-import android.util.Base64
-import android.util.Base64.DEFAULT
 import android.view.View
 import android.widget.Toast
+import android.hardware.SensorManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SensorEventListener {
 
     val CAMERA_REQUEST_CODE = 0
-    val TIME_TO_PHOTO: Long = 5000
+    val TIME_TO_HOLD_DEVICE: Long = 10000
+    val sensorManager: SensorManager by lazy {
+        getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    }
 
     private var imageUri: Uri? = null
 
-    var cloudVision:CloudVision? = null;
+    var cloudVision: CloudVision? = null;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +40,28 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(applicationContext, ImageTestFragmentHolder::class.java))
         })
 
-        object : CountDownTimer(TIME_TO_PHOTO, 1000) {
+        hazGiro()
+
+        object : CountDownTimer(TIME_TO_HOLD_DEVICE, 1000) {
+
+            var giro = false
+            override fun onTick(millisUntilFinished: Long) {
+                val l = millisUntilFinished / 1000
+                countdown.text = "Put your smartphone in front of your face and hold it until the " +
+                        "countdown finishes: " + l
+                if (l < 5 && !giro) {
+                    hazGiro()
+                    giro = true
+                }
+
+            }
+
+            override fun onFinish() {
+                takePhoto()
+            }
+        }.start()
+
+        object : CountDownTimer(TIME_TO_HOLD_DEVICE, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
                 countdown.text = "In " + millisUntilFinished / 1000 + " seconds camera will be " +
@@ -47,6 +72,16 @@ class MainActivity : AppCompatActivity() {
                 takePhoto()
             }
         }.start()
+
+    }
+
+    private fun hazGiro() {
+        val registerListener = sensorManager.registerListener(
+                this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                SensorManager.SENSOR_DELAY_NORMAL
+        )
+
     }
 
     private fun takePhoto() {
@@ -61,6 +96,7 @@ class MainActivity : AppCompatActivity() {
 
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -83,5 +119,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        System.out.println("onAccuracyChanged" + accuracy)
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        val MAX_MOVEMENT = 1
+        if (event!!.values.get(0) > MAX_MOVEMENT ||
+                event.values.get(1) > MAX_MOVEMENT ||
+                event.values.get(2) > MAX_MOVEMENT)
+        System.out.println("Que te pega el ictus")
     }
 }
