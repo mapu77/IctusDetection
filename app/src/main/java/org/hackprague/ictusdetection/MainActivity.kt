@@ -1,6 +1,7 @@
 package org.hackprague.ictusdetection
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var imageUri: Uri? = null
 
     var cloudVision: CloudVision? = null;
+    var ictusDetection = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             startActivity(Intent(applicationContext, ImageTestFragmentHolder::class.java))
         })
 
-        hazGiro()
+        activateGyroscopeSensor()
 
         object : CountDownTimer(TIME_TO_HOLD_DEVICE, 1000) {
 
@@ -50,33 +52,27 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 countdown.text = "Put your smartphone in front of your face and hold it until the " +
                         "countdown finishes: " + l
                 if (l < 5 && !giro) {
-                    hazGiro()
+                    activateGyroscopeSensor()
                     giro = true
                 }
 
             }
 
             override fun onFinish() {
-                takePhoto()
+                if (!ictusDetection) takePhoto()
+                else {
+                    val builder = AlertDialog.Builder(this@MainActivity)
+                    builder.setMessage("Te ha dado un ictus loco")
+                    builder.create().show()
+                }
             }
         }.start()
 
-        object : CountDownTimer(TIME_TO_HOLD_DEVICE, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                countdown.text = "In " + millisUntilFinished / 1000 + " seconds camera will be " +
-                        "open and you should capture a photo of your face"
-            }
-
-            override fun onFinish() {
-                takePhoto()
-            }
-        }.start()
 
     }
 
-    private fun hazGiro() {
-        val registerListener = sensorManager.registerListener(
+    private fun activateGyroscopeSensor() {
+        sensorManager.registerListener(
                 this,
                 sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
                 SensorManager.SENSOR_DELAY_NORMAL
@@ -111,7 +107,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     progressBar.visibility = View.VISIBLE
                     progressBar.isIndeterminate = true
                     Toast.makeText(applicationContext, "Analysing image", Toast.LENGTH_LONG).show()
-                    val ictusDetection = false
+
                     if (!ictusDetection) {
                         toNextButton.visibility = View.VISIBLE
 
@@ -129,7 +125,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         val MAX_MOVEMENT = 1
         if (event!!.values.get(0) > MAX_MOVEMENT ||
                 event.values.get(1) > MAX_MOVEMENT ||
-                event.values.get(2) > MAX_MOVEMENT)
-        System.out.println("Que te pega el ictus")
+                event.values.get(2) > MAX_MOVEMENT) {
+            System.out.println("Que te pega el ictus")
+            ictusDetection = true
+        }
     }
 }
