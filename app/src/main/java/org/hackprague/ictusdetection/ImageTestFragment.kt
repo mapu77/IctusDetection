@@ -1,13 +1,17 @@
 package org.hackprague.ictusdetection
 
+import android.app.AlertDialog
 import android.app.Fragment
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_image_test_holder.*
 import java.util.*
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -21,6 +25,8 @@ class ImageTestFragment : Fragment() {
     private var generator: Random = Random()
 
     private var wrong: Int = 0
+
+    val EMERGENCY_NUMBER = "+34695648474"
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -36,19 +42,47 @@ class ImageTestFragment : Fragment() {
             if (selectedLabel != inputText.toLowerCase()) {
                 wrong++
             }
-            if (indexLabel < labels.size-1) {
+            if (indexLabel < labels.size - 1) {
                 indexLabel++
                 displayImage(labels[indexLabel])
                 selectedLabel = labels[indexLabel]
-            } else {
-                if (wrong < 2) {
-                    Toast.makeText(context, "You are healthy", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(context, "Oops, ictus!", Toast.LENGTH_LONG).show()
-                }
+            }
+            if (wrong > 2) {
+                treatIctus();
+            } else if (indexLabel == labels.size - 1) {
+                val builder = AlertDialog.Builder(context)
+                builder.setMessage("No symptoms detected")
+                builder.create().show()
+
+                object : CountDownTimer(4000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                    }
+
+                    override fun onFinish() {
+
+                    }
+                }.start()
             }
             description.setText("")
         })
+    }
+
+    private fun treatIctus() {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage("Ictus synthoms detected! Calling emergency service")
+        builder.create().show()
+
+        object : CountDownTimer(4000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+            }
+
+            override fun onFinish() {
+                val intent = Intent(Intent.ACTION_CALL)
+                intent.setData(Uri.parse("tel:" + EMERGENCY_NUMBER))
+                startActivity(intent)
+
+            }
+        }.start()
     }
 
     private fun displayImage(selectedLabel: String) {

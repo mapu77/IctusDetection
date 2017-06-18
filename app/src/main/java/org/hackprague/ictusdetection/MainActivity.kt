@@ -151,7 +151,6 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
         if (event!!.values[0] > MAX_MOVEMENT ||
                 event.values[1] > MAX_MOVEMENT ||
                 event.values[2] > MAX_MOVEMENT) {
-            System.out.println("Que te pega el ictus")
             ictusDetection = true
         }
     }
