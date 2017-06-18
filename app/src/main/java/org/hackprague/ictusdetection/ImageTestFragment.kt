@@ -2,6 +2,7 @@ package org.hackprague.ictusdetection
 
 import android.app.AlertDialog
 import android.app.Fragment
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import kotlinx.android.synthetic.main.fragment_image_test_holder.*
 import java.util.*
 
@@ -42,11 +44,6 @@ class ImageTestFragment : Fragment() {
             if (selectedLabel != inputText.toLowerCase()) {
                 wrong++
             }
-            if (indexLabel < labels.size - 1) {
-                indexLabel++
-                displayImage(labels[indexLabel])
-                selectedLabel = labels[indexLabel]
-            }
             if (wrong > 2) {
                 treatIctus();
             } else if (indexLabel == labels.size - 1) {
@@ -63,7 +60,13 @@ class ImageTestFragment : Fragment() {
                     }
                 }.start()
             }
+            if (indexLabel++ < labels.size - 1) {
+                displayImage(labels[indexLabel])
+                selectedLabel = labels[indexLabel]
+            }
             description.setText("")
+            val imn = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imn.hideSoftInputFromWindow(view!!.windowToken, 0)
         })
     }
 
