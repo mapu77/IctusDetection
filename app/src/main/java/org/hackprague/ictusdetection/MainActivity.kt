@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
                 }
             }
         }.start()
-
     }
 
     private fun treatIctus() {
@@ -81,7 +80,7 @@ class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
 
             override fun onFinish() {
                 val intent = Intent(Intent.ACTION_CALL)
-                intent.setData(Uri.parse("tel:" + EMERGENCY_NUMBER))
+                intent.data = Uri.parse("tel:" + EMERGENCY_NUMBER)
                 startActivity(intent)
 
             }
