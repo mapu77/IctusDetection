@@ -7,4 +7,5 @@
     <string name="your_image">your Image</string>
     <string name="imageQuestion">What is this image?</string>
     <string name="submit">Submit</string>
+    <string name="imageTest">This is a test image</string>
 </resources>
