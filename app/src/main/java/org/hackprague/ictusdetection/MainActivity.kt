@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     var cloudVision:CloudVision? = null;
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -60,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

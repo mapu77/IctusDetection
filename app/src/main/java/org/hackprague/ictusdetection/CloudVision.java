@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -105,14 +106,8 @@ public class CloudVision {
                     annotate.setDisableGZipContent(true);
 
                     List<AnnotateImageResponse> responses = annotate.execute().getResponses();
-
-                    for (AnnotateImageResponse res : responses) {
-                        // For full list of available annotations, see http://g.co/cloud/vision/docs
-                        for (FaceAnnotation annotation : res.getFaceAnnotations()) {
-                            System.out.println("anger: %s\njoy: %s\nsurprise: %s\nposition: %s" + annotation.getAngerLikelihood().toString()
-                                    + annotation.getJoyLikelihood() + annotation.getSurpriseLikelihood() + annotation.getBoundingPoly());
-                        }
-                    }
+                    float rollAngle = responses.get(0).getFaceAnnotations().get(0).getRollAngle();
+                    System.out.println("ERES ICTUS: " + rollAngle);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -141,7 +136,10 @@ public class CloudVision {
             resizedHeight = MAX_DIMENSION;
             resizedWidth = MAX_DIMENSION;
         }
-        return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(-90);
+        return Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
     }
 
     private String convertResponseToString(BatchAnnotateImagesResponse response) {
