@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpTransport;
@@ -46,13 +48,25 @@ public class CloudVision {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MAX_DIMENSION = 1200;
 
+    private TaskDelegate delegate;
+
     @SuppressLint("StaticFieldLeak")
-    public void callCloudVision(final Uri uri, final Context context) {
+    public AsyncTask callCloudVision(final TaskDelegate delegate, final Uri uri, final Context context, final ProgressBar progressBar) {
 
         // Do the real work in an async task, because we need to use the network anyway
-        new AsyncTask<Object, Void, String>() {
+        return new AsyncTask<Object, Void, Boolean>() {
+
+            public TaskDelegate myDelegate;
+
             @Override
-            protected String doInBackground(Object... params) {
+            protected void onPostExecute(Boolean hasIctus) {
+                this.myDelegate.TaskCompletionResult(hasIctus);
+            }
+
+            @Override
+            protected Boolean doInBackground(Object... params) {
+
+                this.myDelegate = delegate;
                 try {
                     HttpTransport httpTransport = AndroidHttp.newCompatibleTransport();
                     JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
@@ -107,16 +121,16 @@ public class CloudVision {
 
                     List<AnnotateImageResponse> responses = annotate.execute().getResponses();
                     float rollAngle = responses.get(0).getFaceAnnotations().get(0).getRollAngle();
-                    System.out.println("ERES ICTUS: " + rollAngle);
+                    return rollAngle > 7.5;
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return "Cloud Vision API request failed. Check logs for details.";
+                return null;
             }
-
-        }.execute();
+        };
     }
 
     private Bitmap scaleBitmapDown(Bitmap bitmap) {

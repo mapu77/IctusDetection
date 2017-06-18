@@ -9,6 +9,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.MediaStore
@@ -17,9 +18,12 @@ import android.view.View
 import android.widget.Toast
 import android.hardware.SensorManager
 import kotlinx.android.synthetic.main.activity_main.*
+import android.support.v4.content.ContextCompat.startActivity
 
 
-class MainActivity : AppCompatActivity(), SensorEventListener {
+
+
+class MainActivity : AppCompatActivity(), TaskDelegate, SensorEventListener {
 
     val CAMERA_REQUEST_CODE = 0
     val TIME_TO_HOLD_DEVICE: Long = 10000
@@ -93,6 +97,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
+
+    private var assinTask: AsyncTask<*, *, *>? = null
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -106,6 +113,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     photoImageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri))
                     progressBar.visibility = View.VISIBLE
                     progressBar.isIndeterminate = true
+
+                    assinTask = cloudVision?.callCloudVision(this, imageUri, this.applicationContext, progressBar)
+                    assinTask?.execute()
                     Toast.makeText(applicationContext, "Analysing image", Toast.LENGTH_LONG).show()
 
                     if (!ictusDetection) {
@@ -114,6 +124,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     }
                 }
             }
+        }
+    }
+
+    override fun TaskCompletionResult(hasIctus: Boolean?) {
+        progressBar.visibility = View.INVISIBLE
+
+        if(!hasIctus!!){
+            System.out.println("Try again!")
+            startActivity(Intent(this, ImageTestFragmentHolder::class.java))
+        } else {
+            System.out.println("Pilla Ictus en la MainActivity")
         }
     }
 
